@@ -1,6 +1,6 @@
 {
   "name": "gulp-zkflow-logger",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Logger for gulp zkflow",
   "main": "src/index.js",
   "scripts": {
