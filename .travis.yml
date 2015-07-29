@@ -12,6 +12,7 @@ script:
 deploy:
   provider: npm
   email: bolczyslaw@gmail.com
-  api_key: $npmApiKey
+  api_key: $NPM_API_KEY
   on:
     tags: true
+    repo: zaklinaczekodu/gulp-zkflow-utils

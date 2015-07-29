@@ -1,14 +1,11 @@
 {
-  "name": "gulp-zkflow-logger",
-  "version": "0.1.0",
-  "description": "Logger for gulp zkflow",
+  "name": "gulp-zkflow-utils",
+  "version": "0.0.0",
+  "description": "Utils for gulp zkflow",
   "main": "src/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zaklinaczekodu/gulp-zkflow-logger.git"
+    "url": "https://github.com/zaklinaczekodu/gulp-zkflow-utils.git"
   },
   "keywords": [
     "gulp",
@@ -17,13 +14,16 @@
   "author": "Piotr Baranowski <bolczyslaw@gmail.com> (https://github.com/zaklinaczekodu)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zaklinaczekodu/gulp-zkflow-logger/issues"
+    "url": "https://github.com/zaklinaczekodu/gulp-zkflow-utils/issues"
   },
-  "homepage": "https://github.com/zaklinaczekodu/gulp-zkflow-logger",
+  "homepage": "https://github.com/zaklinaczekodu/gulp-zkflow-utils",
   "dependencies": {
-    "gulp-util": "^3.0.2",
+    "chalk": "^1.1.0",
     "lodash": "^3.5.0",
-    "pretty-hrtime": "^1.0.0"
+    "moment": "^2.10.6",
+    "once": "^1.3.2",
+    "pretty-hrtime": "^1.0.0",
+    "q": "^1.4.1"
   },
   "devDependencies": {
     "gulp": "^3.8.11",
