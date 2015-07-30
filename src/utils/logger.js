@@ -30,41 +30,50 @@ function formatPath(filePaths) {
 
 }
 
-function Logger(name) {
+function logger(name) {
 
   var startHrtime;
 
-  this.log = function log(textTemplate) {
+  function log(textTemplate) {
     var logArguments = Array.prototype.slice.call(arguments, 1);
     logArguments.unshift('%s %s %s ' + textTemplate, chalk.gray(moment().format('HH:mm')), prefix, chalk.cyan.bold(name));
     console.log.apply(undefined, logArguments);
-  };
+  }
 
-  this.restartTimer = function() {
+  function restartTimer() {
     startHrtime = process.hrtime();
-  };
+  }
 
-  this.start = function start() {
-    this.restartTimer();
-    this.log('%s', startSymbol);
-  };
+  function start() {
+    restartTimer();
+    log('%s', startSymbol);
+  }
 
-  this.changed = function start(filePaths) {
-    this.restartTimer();
-    this.log('%s %s', restartSymbol, formatPath(filePaths));
-  };
+  function changed(filePaths) {
+    restartTimer();
+    log('%s %s', restartSymbol, formatPath(filePaths));
+  }
 
-  this.finished = function finished() {
-    this.log('%s %s', stopSymbol, chalk.magenta('◷ ' + prettyHrtime(process.hrtime(startHrtime))));
-  };
+  function finished() {
+    log('%s %s', stopSymbol, chalk.magenta('◷ ' + prettyHrtime(process.hrtime(startHrtime))));
+  }
 
-  this.error = function error(err) {
-    this.log('%s', chalk.red.bold('✖ ' + err.message));
-    this.finished();
-  };
+  function error(err) {
+    log('%s', chalk.red.bold('✖ ' + err.message));
+    finished();
+  }
 
-  this.restartTimer();
+  restartTimer();
+
+  return {
+    log: log,
+    restartTimer: restartTimer,
+    start: start,
+    changed: changed,
+    finished: finished,
+    error: error
+  };
 
 }
 
-module.exports = Logger;
+module.exports = logger;

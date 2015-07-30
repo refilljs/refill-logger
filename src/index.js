@@ -1,7 +1,7 @@
 'use strict';
 
 var gulpZkflowUtils = {
-  Logger: require('./utils/Logger'),
+  logger: require('./utils/logger'),
   promisify: require('./utils/promisify'),
   NextHandler: require('./utils/NextHandler')
 };
