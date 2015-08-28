@@ -2,13 +2,9 @@
 
 var chalk = require('chalk');
 var _ = require('lodash');
-var prefix = chalk.green('◹ zkflow');
 var prettyHrtime = require('pretty-hrtime');
-var startSymbol = chalk.cyan.bold('►');
-var stopSymbol = chalk.cyan.bold('▪');
-var restartSymbol = chalk.cyan.bold('↻');
 var path = require('path');
-var moment = require('moment');
+var util = require('util');
 
 function formatPath(filePaths) {
 
@@ -34,10 +30,23 @@ function logger(name) {
 
   var startHrtime;
 
-  function log(textTemplate) {
-    var logArguments = Array.prototype.slice.call(arguments, 1);
-    logArguments.unshift('%s %s %s ' + textTemplate, chalk.gray(moment().format('HH:mm')), prefix, chalk.cyan.bold(name));
-    console.log.apply(undefined, logArguments);
+  function writePrefix() {
+    process.stdout.write(util.format(' %s %s', logger.prefix, name));
+  }
+
+  function writeMultiLine(text, textWrapper, linePrefix) {
+    text.split('\n').forEach(function(line) {
+      writePrefix();
+      console.log('%s%s', linePrefix, textWrapper(line));
+    });
+  }
+
+  function info(text) {
+    writeMultiLine(text, chalk.blue.bold, chalk.blue.bold(' ℹ '));
+  }
+
+  function error(err) {
+    writeMultiLine(err.message.toString(), chalk.red.bold, chalk.red.bold(' ✖ '));
   }
 
   function restartTimer() {
@@ -46,34 +55,39 @@ function logger(name) {
 
   function start() {
     restartTimer();
-    log('%s', startSymbol);
+    writePrefix();
+    console.log(' %s', logger.startSymbol);
   }
 
   function changed(filePaths) {
     restartTimer();
-    log('%s %s', restartSymbol, formatPath(filePaths));
+    writePrefix();
+    console.log(' %s %s %s', logger.restartSymbol, formatPath(filePaths), logger.startSymbol);
   }
 
   function finished() {
-    log('%s %s', stopSymbol, chalk.magenta('◷ ' + prettyHrtime(process.hrtime(startHrtime))));
+    writePrefix();
+    console.log(' %s %s', logger.stopSymbol, chalk.magenta('◷ ' + prettyHrtime(process.hrtime(startHrtime))));
   }
 
-  function error(err) {
-    log('%s', chalk.red.bold('✖ ' + err.message));
-    finished();
-  }
+  name = chalk.green(_.padRight(name + ' ', 12, '.'));
 
   restartTimer();
 
   return {
-    log: log,
+    info: info,
+    error: error,
     restartTimer: restartTimer,
     start: start,
     changed: changed,
-    finished: finished,
-    error: error
+    finished: finished
   };
 
 }
+
+logger.prefix = chalk.green('◹');
+logger.startSymbol = chalk.green('►');
+logger.stopSymbol = chalk.green('▪');
+logger.restartSymbol = chalk.green('↻');
 
 module.exports = logger;

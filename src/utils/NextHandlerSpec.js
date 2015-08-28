@@ -2,14 +2,20 @@
 
 describe('utils/NextHandler', function() {
 
+  var q = require('q');
+  var checkNotWatchNotIgnoringFailures = require('./NextHandlerSpec/checkNotWatchNotIgnoringFailures');
+  var checkNotWatchIgnoringFailures = require('./NextHandlerSpec/checkNotWatchIgnoringFailures');
+  var checkWatch = require('./NextHandlerSpec/checkWatch');
+
   beforeEach(function() {
-    this.q = require('q');
-    this.deferred = this.q.defer();
+
+    this.deferred = q.defer();
 
     this.nextMock = jasmine.createSpy('nextMock');
-    this.loggerMock = jasmine.createSpyObj('loggerMock', ['finished', 'error']);
+    this.loggerMock = jasmine.createSpyObj('loggerMock', ['finished', 'error', 'info']);
 
     this.NextHandler = require('./NextHandler');
+
   });
 
   describe('when NOT in watch mode', function() {
@@ -17,6 +23,7 @@ describe('utils/NextHandler', function() {
     describe('and NOT ignoring failures', function() {
 
       beforeEach(function() {
+
         this.nextHandler = new this.NextHandler({
           next: this.nextMock,
           logger: this.loggerMock,
@@ -25,69 +32,17 @@ describe('utils/NextHandler', function() {
 
         this.nextHandler.handle(this.deferred.promise);
         expect(this.nextMock).not.toHaveBeenCalled();
-      });
-
-      describe('and promise resolves', function() {
-
-        beforeEach(function(next) {
-          this.deferred.resolve();
-          this.deferred.promise.then(next);
-        });
-
-        it('should call next', function() {
-          expect(this.nextMock).toHaveBeenCalled();
-        });
-
-        it('should call logger.finished', function() {
-          expect(this.loggerMock.finished).toHaveBeenCalled();
-        });
-
-        it('and then promise resolves again should NOT call next', function(next) {
-
-          var otherDeferred = this.q.defer();
-          var that = this;
-
-          this.nextMock.calls.reset();
-
-          this.nextHandler.handle(otherDeferred.promise);
-
-          otherDeferred.promise
-            .then(function() {
-              expect(that.nextMock).not.toHaveBeenCalled();
-              next();
-            });
-
-          otherDeferred.resolve();
-
-        });
 
       });
 
-      describe('and promise rejects', function() {
-
-        beforeEach(function(next) {
-          this.errorMessage = 'mock error message';
-          this.deferred.reject(this.errorMessage);
-          this.deferred.promise.catch(next);
-        });
-
-        it('should call next with error message', function() {
-          expect(this.nextMock).toHaveBeenCalled();
-        });
-
-        it('should call logger.error with error messageand then logger.finished', function() {
-          expect(this.loggerMock.error).toHaveBeenCalledWith({
-            message: this.errorMessage
-          });
-        });
-
-      });
+      checkNotWatchNotIgnoringFailures();
 
     });
 
     describe('and ignoring failures', function() {
 
       beforeEach(function() {
+
         this.nextHandler = new this.NextHandler({
           next: this.nextMock,
           logger: this.loggerMock,
@@ -97,21 +52,10 @@ describe('utils/NextHandler', function() {
 
         this.nextHandler.handle(this.deferred.promise);
         expect(this.nextMock).not.toHaveBeenCalled();
-      });
-
-      describe('and promise rejects', function() {
-
-        beforeEach(function(next) {
-          this.errorMessage = 'mock error message';
-          this.deferred.reject(this.errorMessage);
-          this.deferred.promise.catch(next);
-        });
-
-        it('should call next without error message', function() {
-          expect(this.nextMock).toHaveBeenCalledWith();
-        });
 
       });
+
+      checkNotWatchIgnoringFailures();
 
     });
 
@@ -130,42 +74,7 @@ describe('utils/NextHandler', function() {
       expect(this.nextMock).not.toHaveBeenCalled();
     });
 
-    describe('and promise resolves', function() {
-
-      beforeEach(function(next) {
-        this.deferred.resolve();
-        this.deferred.promise.then(next);
-      });
-
-      it('should call next', function() {
-        expect(this.nextMock).toHaveBeenCalled();
-      });
-
-      it('should call logger.finished', function() {
-        expect(this.loggerMock.finished).toHaveBeenCalled();
-      });
-
-    });
-
-    describe('and promise rejects', function() {
-
-      beforeEach(function(next) {
-        this.errorMessage = 'mock error message';
-        this.deferred.reject(this.errorMessage);
-        this.deferred.promise.catch(next);
-      });
-
-      it('should NOT call next', function() {
-        expect(this.nextMock).not.toHaveBeenCalled();
-      });
-
-      it('should call logger.error with error messageand then logger.finished', function() {
-        expect(this.loggerMock.error).toHaveBeenCalledWith({
-          message: this.errorMessage
-        });
-      });
-
-    });
+    checkWatch();
 
   });
 
