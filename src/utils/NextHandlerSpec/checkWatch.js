@@ -13,8 +13,8 @@ module.exports = function checkWatch() {
       expect(this.nextMock).toHaveBeenCalled();
     });
 
-    it('should call logger.finished', function() {
-      expect(this.loggerMock.finished).toHaveBeenCalled();
+    it('should NOT call logger.finished', function() {
+      expect(this.loggerMock.finished).not.toHaveBeenCalled();
     });
 
   });
@@ -31,7 +31,7 @@ module.exports = function checkWatch() {
       expect(this.nextMock).not.toHaveBeenCalled();
     });
 
-    it('should call logger.error with error message and then logger.finished', function() {
+    it('should call logger.error with error message', function() {
       expect(this.loggerMock.error).toHaveBeenCalledWith({
         message: this.errorMessage
       });

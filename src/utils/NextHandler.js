@@ -16,18 +16,18 @@ NextHandler.prototype.handle = function(promise, options) {
     ignoreFailures: false
   });
 
-  if (computedOptions.handleSuccess) {
-    promise.then(function() {
-      computedOptions.logger.finished();
-      that.onceNext();
-    });
+  function finished() {
+    if (!that.onceNext.called) {
+      return;
+    }
+    computedOptions.logger.finished();
   }
 
   promise.catch(function(error) {
 
     if (computedOptions.ignoreFailures) {
       computedOptions.logger.info(error);
-      computedOptions.logger.finished();
+      finished();
       that.onceNext();
       return;
     }
@@ -35,15 +35,24 @@ NextHandler.prototype.handle = function(promise, options) {
     computedOptions.logger.error({
       message: error
     });
-    computedOptions.logger.finished();
 
     if (computedOptions.watch) {
+      computedOptions.logger.finished();
       return;
     }
 
+    finished();
     that.onceNext(error);
-    return;
 
+  });
+
+  if (!computedOptions.handleSuccess) {
+    return promise;
+  }
+
+  promise.then(function() {
+    finished();
+    that.onceNext();
   });
 
   return promise;

@@ -15,26 +15,47 @@ module.exports = function checkNotWatchNotIgnoringFailures() {
       expect(this.nextMock).toHaveBeenCalled();
     });
 
-    it('should call logger.finished', function() {
-      expect(this.loggerMock.finished).toHaveBeenCalled();
+    it('should NOT call logger.finished', function() {
+      expect(this.loggerMock.finished).not.toHaveBeenCalled();
     });
 
-    it('and then promise resolves again should NOT call next', function(next) {
+    describe('and then promise resolves again ', function() {
 
-      var otherDeferred = q.defer();
-      var that = this;
+      beforeEach(function() {
 
-      this.nextMock.calls.reset();
+        this.otherDeferred = q.defer();
 
-      this.nextHandler.handle(otherDeferred.promise);
+        this.nextMock.calls.reset();
 
-      otherDeferred.promise
-        .then(function() {
-          expect(that.nextMock).not.toHaveBeenCalled();
-          next();
-        });
+        this.nextHandler.handle(this.otherDeferred.promise);
 
-      otherDeferred.resolve();
+        this.otherDeferred.resolve();
+
+      });
+
+      it('should NOT call next', function(next) {
+
+        var that = this;
+
+        this.otherDeferred.promise
+          .then(function() {
+            expect(that.nextMock).not.toHaveBeenCalled();
+            next();
+          });
+
+      });
+
+      it('should call logger.finished', function(next) {
+
+        var that = this;
+
+        this.otherDeferred.promise
+          .then(function() {
+            expect(that.loggerMock.finished).toHaveBeenCalled();
+            next();
+          });
+
+      });
 
     });
 
