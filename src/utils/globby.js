@@ -6,18 +6,13 @@ function promiseGlobby(globs, filesNotFoundMessage, options) {
   var globby = require('globby');
   var deferred = q.defer();
 
-  globby(globs, options, function(error, files) {
-    if (error !== null) {
-      deferred.reject(error);
-      return;
-    }
-    if (files.length === 0) {
+  globby(globs, options).then(function(paths) {
+    if (paths.length === 0) {
       deferred.reject(filesNotFoundMessage);
       return;
     }
-    deferred.resolve(files);
-    return;
-  });
+    deferred.resolve(paths);
+  }, deferred.reject);
 
   return deferred.promise;
 

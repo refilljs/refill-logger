@@ -42,7 +42,7 @@ function logger(name) {
   }
 
   function info(text) {
-    writeMultiLine(text, chalk.blue.bold, chalk.blue.bold(' ℹ '));
+    writeMultiLine(text, chalk.blue, chalk.blue(' ℹ '));
   }
 
   function error(err) {
