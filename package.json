@@ -1,6 +1,6 @@
 {
   "name": "gulp-zkflow-utils",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Utils for gulp zkflow",
   "main": "src/index.js",
   "repository": {
