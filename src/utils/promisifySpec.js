@@ -1,38 +1,51 @@
 'use strict';
 
+var proxyquire = require('proxyquire');
+
 describe('utils/promisify', function() {
 
   beforeEach(function() {
-    this.promisify = require('./promisify');
-    this.streamMock = jasmine.createSpyObj('streamMock', ['on']);
-    this.streamMock.on.and.returnValue(this.streamMock);
+
+    this.stream = {};
+    this.endOfStream = jasmine.createSpy('endOfStream');
+    this.streamConsume = jasmine.createSpy('streamConsume');
+    this.promisify = proxyquire('./promisify', {
+      'end-of-stream': this.endOfStream,
+      'stream-consume': this.streamConsume
+    });
+
   });
 
-  it('should resolve promise with stream when stream ends', function(next) {
+  it('should consume stream', function() {
+    this.promisify(this.stream);
+    expect(this.streamConsume).toHaveBeenCalledWith(this.stream);
+  });
+
+  it('when stream ends should resolve promise with stream', function(next) {
 
     var that = this;
 
-    this.promisify(this.streamMock)
+    this.promisify(this.stream)
       .then(function(resolver) {
-        expect(resolver).toBe(that.streamMock);
+        expect(resolver).toBe(that.stream);
         next();
       });
 
-    this.streamMock.on.calls.argsFor(0)[1]();
+    this.endOfStream.calls.argsFor(0)[1]();
 
   });
 
-  it('should reject promise with error when stream have error', function(next) {
+  it('when stream have error should reject promise with this error', function(next) {
 
     var error = 'error message';
 
-    this.promisify(this.streamMock)
+    this.promisify(this.stream)
       .catch(function(rejecter) {
         expect(rejecter).toBe(error);
         next();
       });
 
-    this.streamMock.on.calls.argsFor(1)[1](error);
+    this.endOfStream.calls.argsFor(0)[1](error);
 
   });
 
