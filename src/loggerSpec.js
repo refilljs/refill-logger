@@ -4,8 +4,9 @@ describe('utils/logger', function() {
 
   it('should create new logger with name', function() {
 
+    var logger;
     spyOn(console, 'log');
-    var logger = require('./logger');
+    logger = require('./logger');
     logger('name');
 
   });

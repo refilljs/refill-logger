@@ -1,7 +1,8 @@
 'use strict';
 
 var chalk = require('chalk');
-var _ = require('lodash');
+var map = require('lodash.map');
+var padEnd = require('lodash.padend');
 var prettyHrtime = require('pretty-hrtime');
 var path = require('path');
 var util = require('util');
@@ -14,11 +15,11 @@ function formatPath(filePaths) {
     filePaths = filePaths.path;
   }
 
-  if (!_.isArray(filePaths)) {
+  if (!Array.isArray(filePaths)) {
     filePaths = [filePaths];
   }
 
-  formattedPaths = _.map(filePaths, function(filePath) {
+  formattedPaths = map(filePaths, function(filePath) {
     return path.relative(process.cwd(), filePath);
   }).join(', ');
 
@@ -37,7 +38,9 @@ function logger(name) {
   function writeMultiLine(text, textWrapper, linePrefix) {
     text.split('\n').forEach(function(line) {
       writePrefix();
+      /* eslint-disable no-console */
       console.log('%s%s', linePrefix, textWrapper(line));
+      /* eslint-enable no-console */
     });
   }
 
@@ -56,21 +59,27 @@ function logger(name) {
   function start() {
     restartTimer();
     writePrefix();
+    /* eslint-disable no-console */
     console.log(' %s', logger.startSymbol);
+    /* eslint-enable no-console */
   }
 
   function changed(filePaths) {
     restartTimer();
     writePrefix();
+    /* eslint-disable no-console */
     console.log(' %s %s %s', logger.restartSymbol, formatPath(filePaths), logger.startSymbol);
+    /* eslint-enable no-console */
   }
 
   function finished() {
     writePrefix();
+    /* eslint-disable no-console */
     console.log(' %s %s', logger.stopSymbol, chalk.magenta('◷ ' + prettyHrtime(process.hrtime(startHrtime))));
+    /* eslint-enable no-console */
   }
 
-  name = chalk.green(_.padRight(name + ' ', 12, '.'));
+  name = chalk.green(padEnd(name + ' ', 12, '.'));
 
   restartTimer();
 
