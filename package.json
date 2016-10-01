@@ -17,6 +17,10 @@
     "url": "https://github.com/refilljs/refill-logger/issues"
   },
   "homepage": "https://github.com/refilljs/refill-logger",
+  "engines": {
+    "node": ">=4.2",
+    "npm": ">=3.3.3"
+  },
   "dependencies": {
     "chalk": "1.1.3",
     "lodash.map": "4.6.0",
